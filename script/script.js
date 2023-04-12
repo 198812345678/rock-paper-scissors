@@ -2,14 +2,19 @@ const WINNER_PLAYER = 'PLAYER';
 const WINNER_COMPUTER = 'COMPUTER';
 const WINNER_TIE = "TIE";
 
+let PLAYER_WIN_TIMES = 0;
+let COMPUTER_WIN_TIMES = 0;
+
+let finished = false;
+
 function getComputerChoice() {
     random = getRandom(3);
     if (random < 1) {
-        return "Rock";
+        return "ROCK";
     } else if (random < 2) {
-        return "Paper";
+        return "PAPER";
     } else if (random < 3) {
-        return "Scissors";
+        return "SCISSORS";
     }
 }
 
@@ -17,49 +22,63 @@ function getRandom(seed) {
     return Math.random() * seed;
 }
 
-function playRound(playerSelection, computerSelection) {
+function playRound(playerSelection) {
+
+    if (finished) {
+        alert("Game is finished");
+        return;
+    }
+
+    let computerSelection = getComputerChoice();
+    let winner;
     if(playerSelection.toUpperCase() === computerSelection.toUpperCase()) {
-        return WINNER_TIE;
+        winner = WINNER_TIE;
     } else if(playerSelection.toUpperCase() === 'ROCK' && computerSelection.toUpperCase() === 'SCISSORS') {
-        return WINNER_PLAYER;
+        winner = WINNER_PLAYER;
     } else if(playerSelection.toUpperCase() === 'SCISSORS' && computerSelection.toUpperCase() === 'PAPER') {
-        return WINNER_PLAYER;
+        winner = WINNER_PLAYER;
     } else if (playerSelection.toUpperCase() === 'PAPER' && computerSelection.toUpperCase() === 'ROCK') {
-        return WINNER_PLAYER;
+        winner = WINNER_PLAYER;
     } else if(computerSelection.toUpperCase() === 'ROCK' && playerSelection.toUpperCase() === 'SCISSORS') {
-        return WINNER_COMPUTER;
+        winner = WINNER_COMPUTER;
     } else if(computerSelection.toUpperCase() === 'SCISSORS' && playerSelection.toUpperCase() === 'PAPER') {
-        return WINNER_COMPUTER;
+        winner = WINNER_COMPUTER;
     } else if (computerSelection.toUpperCase() === 'PAPER' && playerSelection.toUpperCase() === 'ROCK') {
-        return WINNER_COMPUTER;
+        winner = WINNER_COMPUTER;
+    }
+
+    switch (winner) {
+        case WINNER_PLAYER:
+            PLAYER_WIN_TIMES++;
+            break;
+        case WINNER_COMPUTER:
+            COMPUTER_WIN_TIMES++;    
+            break;
+        default:
+            break;
+    }
+
+    displayWinner(winner);
+
+    if(PLAYER_WIN_TIMES === 5) {
+        displayFinalWinner(WINNER_PLAYER);
+        finished = true;
+    } else if(COMPUTER_WIN_TIMES === 5) {       
+        displayFinalWinner(WINNER_COMPUTER);
+        finished = true;
     }
 }
 
-function game() {
-    let playerWinTimes = 0;
-    let computerWinTimes = 0;
-    for (let index = 0; index < 5; index++) {
-        let playerSelection = prompt("your choice:", 'ROCK');
-        let computerSelection = getComputerChoice();
-        let winner = playRound(playerSelection, computerSelection);
-        console.log("round " + index + ": playerSelection is " + playerSelection + " , computerSelection is " + computerSelection + ", winner is " + winner);
-        switch (winner) {
-            case WINNER_PLAYER:
-                playerWinTimes++;
-                break;
-            case WINNER_COMPUTER:
-                computerWinTimes++;    
-                break;
-            default:
-                break;
-        }
-    }
-    if(playerWinTimes > computerWinTimes) {
-        console.log("you win");
-    } else if(playerWinTimes < computerWinTimes) {
-        console.log("you lose");
-    } else {
-        console.log("it is tie");
-    }
+// a function that add an element to display final winner using DOM manipulation
+function displayFinalWinner(winner) {
+    let finalWinnerElement = document.createElement('div');
+    finalWinnerElement.textContent = 'final winner is: ' + winner;
+    document.body.appendChild(finalWinnerElement);
 }
 
+//a function that add some element to display winner using DOM manipulation
+function displayWinner(winner) {
+    let winnerElement = document.createElement('div');
+    winnerElement.textContent = 'winner is: ' + winner;
+    document.body.appendChild(winnerElement);
+}
